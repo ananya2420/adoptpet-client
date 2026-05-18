@@ -103,12 +103,12 @@ const Navbar = () => {
           </div>
 
           {/* Menu */}
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 w-full"
-          >
-            📊 Dashboard
-          </Link>
+       <Link
+  href="/pages/Home/Dashboard"
+  className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 w-full"
+>
+  📊 Dashboard
+</Link>
 
           <button
             className="w-full text-left flex items-center gap-2 px-4 py-3 hover:bg-yellow-400 hover:text-black transition"
