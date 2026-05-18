@@ -180,6 +180,20 @@ const AddPetPanel = () => {
               </Select>
             </div>
 
+            {/* Location */}
+            <TextField name="location" isRequired>
+              <Label className="text-black font-medium">Location</Label>
+              <Input placeholder="e.g. Los Angeles, CA or New York, NY" className="rounded-2xl text-black" />
+              <FieldError className="text-red-500 text-xs" />
+            </TextField>
+
+            {/* Adoption Fee */}
+            <TextField name="adoptionFee" isRequired>
+              <Label className="text-black font-medium">Adoption Fee ($)</Label>
+              <Input type="number" min="0" placeholder="e.g. 50" className="rounded-2xl text-black" />
+              <FieldError className="text-red-500 text-xs" />
+            </TextField>
+
             {/* Pet Image URL */}
             <div className="md:col-span-2">
               <TextField name="imageUrl" isRequired>

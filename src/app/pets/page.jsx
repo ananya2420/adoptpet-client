@@ -18,6 +18,8 @@ const PetPage = async () => {
         {
           pets?.map(pet => <PetCard key={pet._id} pet={pet}/>)
         }
+
+        
       </div>
     </div> 
   );
