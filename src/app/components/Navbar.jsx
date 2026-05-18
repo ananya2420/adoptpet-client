@@ -9,7 +9,7 @@ import { IoMdHome } from "react-icons/io";
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
 
-  // Load saved theme OR system theme
+  {/*// Load saved theme OR system theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
 
@@ -29,7 +29,7 @@ const Navbar = () => {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
-  }, [darkMode]);
+  }, [darkMode]); */}
 
   return (
     <nav className="flex justify-between items-center p-5 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
