@@ -5,9 +5,13 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoMdHome } from "react-icons/io";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
+  const { data: session } = authClient.useSession();
 
   {/*// Load saved theme OR system theme
   useEffect(() => {
@@ -30,6 +34,11 @@ const Navbar = () => {
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]); */}
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.push("/login");
+  };
 
   return (
     <nav className="flex justify-between items-center p-5 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
@@ -65,8 +74,8 @@ const Navbar = () => {
         </button>
 
         <Link href="/profile">Profile</Link>
-        <Link href="/login">Login</Link>
-        <Link href="/signUp">Sign Up</Link>
+        {!session && <Link href="/login">Login</Link>}
+        <Link href="/register">Register</Link>
 
       </div>
 
@@ -111,6 +120,7 @@ const Navbar = () => {
 </Link>
 
           <button
+            onClick={handleLogout}
             className="w-full text-left flex items-center gap-2 px-4 py-3 hover:bg-yellow-400 hover:text-black transition"
           >
             🚪 Logout
