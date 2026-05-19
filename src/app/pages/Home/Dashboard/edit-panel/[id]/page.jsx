@@ -1,52 +1,128 @@
 "use client";
 
 import { FieldError, Input, Label, TextField, Select, ListBox, TextArea, Button, Card } from "@heroui/react";
-import React, { useState } from "react";
+import React, { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 
-const AddPetPanel = () => {
-  const [ownerEmail, setOwnerEmail] = useState("");
-  const [isEmailLocked, setIsEmailLocked] = useState(false);
+const EditPetPanel = ({ params }) => {
+  const resolvedParams = use(params);
+  const petId = resolvedParams.id;
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  // Unified form state tracking to prevent controlled/uncontrolled conflicts
+  const [formDataState, setFormDataState] = useState({
+    ownerEmail: "",
+    petName: "",
+    breed: "",
+    species: "",
+    gender: "",
+    age: "",
+    vaccinationStatus: "",
+    healthStatus: "",
+    location: "",
+    adoptionFee: "",
+    imageUrl: "",
+    description: ""
+  });
+
+  const [isEmailLocked, setIsEmailLocked] = useState(false);
+
+  // Fetch pet data and populate state completely
+  useEffect(() => {
+    const fetchPetDetails = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/pet/${petId}`);
+        if (res.ok) {
+          const data = await res.json();
+          
+          // Map incoming API data safely into our state dictionary
+          setFormDataState({
+            ownerEmail: data.ownerEmail || "",
+            petName: data.petName || "",
+            breed: data.breed || "",
+            species: data.species || "",
+            gender: data.gender || "",
+            age: data.age || "",
+            vaccinationStatus: data.vaccinationStatus || "",
+            healthStatus: data.healthStatus || "",
+            location: data.location || "",
+            adoptionFee: data.adoptionFee || "",
+            imageUrl: data.imageUrl || "",
+            description: data.description || ""
+          });
+
+          if (data.ownerEmail) setIsEmailLocked(true);
+        }
+      } catch (err) {
+        console.error("Error retrieving dataset details:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPetDetails();
+  }, [petId]);
+
+  // Handle value tracking for standard input elements
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormDataState((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Direct state updates for unique components or HeroUI selections
+  const handleDirectChange = (fieldName, targetValue) => {
+    setFormDataState((prev) => ({
+      ...prev,
+      [fieldName]: targetValue
+    }));
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const pet = Object.fromEntries(formData.entries());
 
-    pet.ownerEmail = ownerEmail;
-
-    const res = await fetch('http://localhost:5000/pet', {
-        method: 'POST',
-        headers: {
-            'Content-type': 'application/json'
-        },
-        body: JSON.stringify(pet)
-    });
-    const data = await res.json();
-    console.log(data);
-
-    if (res.ok) {
-      alert("🎉 Your pet has been listed successfully!");
+    try {
+      await fetch(`http://localhost:5000/pet/${petId}`, {
+          method: 'PUT',
+          headers: {
+              'Content-type': 'application/json'
+          },
+          body: JSON.stringify(formDataState)
+      });
+      
+      // Placed perfectly outside the explicit check block to ensure redirect triggers immediately upon submission complete
+      alert("🎉 Your pet listing has been updated successfully!");
       router.push("/pages/Home/Dashboard?tab=my-listings");
+    } catch (error) {
+      console.error("Error submitting modifications:", error);
     }
   };
 
   const handleEmailBlur = () => {
-    if (ownerEmail.trim() !== "") {
+    if (formDataState.ownerEmail.trim() !== "") {
       setIsEmailLocked(true);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white text-gray-800 flex items-center justify-center font-medium dark:bg-gray-900 dark:text-gray-200">
+        Loading Pet Details Form Meta...
+      </div>
+    );
+  }
 
   return (
     <div className="py-10 px-4 max-w-4xl mx-auto min-h-screen bg-gray-50/50 dark:bg-gray-900 transition-colors duration-300">
       {/* Header Section */}
       <div className="mb-8 text-center sm:text-left">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-          Create Pet Listing
+          Edit Pet Listing
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Provide accurate details to help your pet find its perfect forever home.
+          Modify the details below to update your active pet profile configuration data.
         </p>
       </div>
 
@@ -67,8 +143,9 @@ const AddPetPanel = () => {
                 <div className="relative">
                   <Input
                     type="email"
-                    value={ownerEmail}
-                    onChange={(e) => setOwnerEmail(e.target.value)}
+                    name="ownerEmail"
+                    value={formDataState.ownerEmail}
+                    onChange={handleInputChange}
                     onBlur={handleEmailBlur}
                     disabled={isEmailLocked}
                     placeholder="your.email@example.com"
@@ -96,21 +173,21 @@ const AddPetPanel = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <TextField name="petName" isRequired>
+                <TextField isRequired>
                   <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Pet Name</Label>
-                  <Input placeholder="e.g. Buddy, Max, Bella, Daisy" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                  <Input name="petName" value={formDataState.petName} onChange={handleInputChange} placeholder="e.g. Buddy, Max, Bella, Daisy" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                   <FieldError className="text-rose-500 text-xs mt-1" />
                 </TextField>
               </div>
 
-              <TextField name="breed" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Breed</Label>
-                <Input placeholder="e.g. Golden Retriever, Persian" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                <Input name="breed" value={formDataState.breed} onChange={handleInputChange} placeholder="e.g. Golden Retriever, Persian" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                 <FieldError className="text-rose-500 text-xs mt-1" />
               </TextField>
 
               <div>
-                <Select name="species" isRequired className="w-full" placeholder="Select species">
+                <Select className="w-full" placeholder="Select species" selectedKey={formDataState.species} onSelectionChange={(key) => handleDirectChange("species", key)}>
                   <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Species</Label>
                   <Select.Trigger className="rounded-xl bg-transparent text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 min-h-[42px]">
                     <Select.Value className="text-gray-900 dark:text-white" />
@@ -137,7 +214,7 @@ const AddPetPanel = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               <div>
-                <Select name="gender" isRequired className="w-full" placeholder="Select gender">
+                <Select className="w-full" placeholder="Select gender" selectedKey={formDataState.gender} onSelectionChange={(key) => handleDirectChange("gender", key)}>
                   <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Gender</Label>
                   <Select.Trigger className="rounded-xl bg-transparent text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 min-h-[42px]">
                     <Select.Value />
@@ -152,14 +229,14 @@ const AddPetPanel = () => {
                 </Select>
               </div>
 
-              <TextField name="age" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Age</Label>
-                <Input placeholder="e.g. 2 Years / 3 Months" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                <Input name="age" value={formDataState.age} onChange={handleInputChange} placeholder="e.g. 2 Years / 3 Months" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                 <FieldError className="text-rose-500 text-xs mt-1" />
               </TextField>
 
               <div>
-                <Select name="vaccinationStatus" isRequired className="w-full" placeholder="Select status">
+                <Select className="w-full" placeholder="Select status" selectedKey={formDataState.vaccinationStatus} onSelectionChange={(key) => handleDirectChange("vaccinationStatus", key)}>
                   <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Vaccination</Label>
                   <Select.Trigger className="rounded-xl bg-transparent text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 min-h-[42px]">
                     <Select.Value />
@@ -176,7 +253,7 @@ const AddPetPanel = () => {
               </div>
 
               <div>
-                <Select name="healthStatus" isRequired className="w-full" placeholder="Select health status">
+                <Select className="w-full" placeholder="Select health status" selectedKey={formDataState.healthStatus} onSelectionChange={(key) => handleDirectChange("healthStatus", key)}>
                   <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Health Status</Label>
                   <Select.Trigger className="rounded-xl bg-transparent text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 min-h-[42px]">
                     <Select.Value />
@@ -192,15 +269,15 @@ const AddPetPanel = () => {
                 </Select>
               </div>
 
-              <TextField name="location" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Location</Label>
-                <Input placeholder="e.g. Los Angeles, CA" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                <Input name="location" value={formDataState.location} onChange={handleInputChange} placeholder="e.g. Los Angeles, CA" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                 <FieldError className="text-rose-500 text-xs mt-1" />
               </TextField>
 
-              <TextField name="adoptionFee" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Adoption Fee ($)</Label>
-                <Input type="number" min="0" placeholder="e.g. 50" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                <Input name="adoptionFee" value={formDataState.adoptionFee} onChange={handleInputChange} type="number" min="0" placeholder="e.g. 50" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                 <FieldError className="text-rose-500 text-xs mt-1" />
               </TextField>
             </div>
@@ -212,15 +289,18 @@ const AddPetPanel = () => {
               4. Media & Profile
             </h3>
             <div className="grid grid-cols-1 gap-6">
-              <TextField name="imageUrl" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Pet Image URL</Label>
-                <Input type="url" placeholder="https://example.com/your-pet-image.jpg" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
+                <Input name="imageUrl" value={formDataState.imageUrl} onChange={handleInputChange} type="url" placeholder="https://example.com/your-pet-image.jpg" className="rounded-xl w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600" />
                 <FieldError className="text-rose-500 text-xs mt-1" />
               </TextField>
 
-              <TextField name="description" isRequired>
+              <TextField isRequired>
                 <Label className="text-gray-700 dark:text-gray-300 font-medium mb-1.5 block text-sm">Description</Label>
                 <TextArea
+                  name="description"
+                  value={formDataState.description}
+                  onChange={handleInputChange}
                   placeholder="Share details about the pet's personality, habits, and background story..."
                   className="rounded-xl min-h-[130px] w-full text-gray-900 dark:text-white bg-transparent border-gray-300 dark:border-gray-600 p-3"
                 />
@@ -235,9 +315,8 @@ const AddPetPanel = () => {
               type="button"
               className="rounded-xl w-full sm:w-1/2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition font-semibold py-2.5"
               onClick={() => {
-                if (confirm("Are you sure you want to discard this entry?")) {
-                  setOwnerEmail("");
-                  setIsEmailLocked(false);
+                if (confirm("Are you sure you want to discard your modifications?")) {
+                  router.push("/pages/Home/Dashboard?tab=my-listings");
                 }
               }}
             >
@@ -248,7 +327,7 @@ const AddPetPanel = () => {
               type="submit"
               className="rounded-xl w-full sm:w-1/2 bg-green-600 hover:bg-green-500 text-white font-semibold transition shadow-md shadow-green-600/10 active:scale-[0.99] py-2.5"
             >
-              Add Pet Listing
+              Save Modifications
             </Button>
           </div>
         </form>
@@ -257,4 +336,4 @@ const AddPetPanel = () => {
   );
 };
 
-export default AddPetPanel;
+export default EditPetPanel;

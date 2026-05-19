@@ -6,6 +6,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "upload.wikimedia.org", // 🌟 Added to fix your Wikimedia cat image error
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "huft.sg", // Added for your Singapore dog blog images
         pathname: "/**",
       },
@@ -41,7 +46,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "people.com", // Added to fix your current runtime error
+        hostname: "people.com", 
         pathname: "/**",
       },
     ],
