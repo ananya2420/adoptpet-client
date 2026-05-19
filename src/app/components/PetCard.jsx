@@ -12,13 +12,32 @@ import { useRouter } from "next/navigation";
 
 // 🛠️ Added searchQuery to received parameters
 const PetCard = ({ pet, searchQuery = "" }) => {
-  const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, _id } = pet;
+  // 🔐 Added ownerId and status fields from pet object schema properties
+  const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, _id, ownerId, status } = pet;
   const testImage = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500";
   
   const router = useRouter();
   const isAuthenticated = false; 
 
+  // 👤 Mock Current Logged-In User Information (Replace with your Auth context/state hook)
+  const currentUser = { id: "user_123" }; 
+
+  // 🛑 Rule 1: Pet owners are not allowed to submit adoption requests for their own pets
+  const isOwner = currentUser && ownerId === currentUser.id;
+
+  // 🛑 Rule 2: Check if the pet has already been adopted to prevent further actions
+  const isAdopted = status === "adopted";
+
   const handleAdoptClick = () => {
+    if (isOwner) {
+      alert("You cannot submit an adoption request for your own pet.");
+      return;
+    }
+    if (isAdopted) {
+      alert("This pet has already been adopted.");
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push(`/login?callbackUrl=${encodeURIComponent(`/pets/${_id}`)}`);
     } else {
@@ -32,7 +51,7 @@ const PetCard = ({ pet, searchQuery = "" }) => {
 
   return (
     <div 
-      className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all duration-300 flex flex-col h-full group
+      className={`bg-white border rounded-2xl overflow-hidden shadow-sm transition-all duration-300 flex flex-col h-full group position-relative
         ${isMatched 
           ? "border-teal-500 ring-4 ring-teal-500/20 scale-[1.02] z-10 shadow-md" 
           : isSearching 
@@ -52,6 +71,15 @@ const PetCard = ({ pet, searchQuery = "" }) => {
           sizes="(max-w-7xl) 33vw, (max-w-md) 100vw"
           priority 
         />
+        
+        {/* 🏷️ Visual Banner: Mark the pet clearly if its state changes to Adopted */}
+        {isAdopted && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center z-10">
+            <span className="bg-red-600 text-white font-black text-sm tracking-widest uppercase px-4 py-2 rounded-xl shadow-lg border border-red-500">
+              Adopted 🎉
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content Inner Wrap */}
@@ -104,9 +132,14 @@ const PetCard = ({ pet, searchQuery = "" }) => {
           
           <button
             onClick={handleAdoptClick}
-            className="flex-1 px-3 py-2.5 text-xs font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-sm transition-all duration-150 active:scale-98 text-center truncate"
+            disabled={isOwner || isAdopted}
+            className={`flex-1 px-3 py-2.5 text-xs font-bold text-white rounded-xl shadow-sm transition-all duration-150 text-center truncate
+              ${isOwner || isAdopted 
+                ? "bg-gray-300 cursor-not-allowed opacity-70" 
+                : "bg-green-600 hover:bg-green-500 active:scale-98"
+              }`}
           >
-            Adopt now
+            {isOwner ? "Your Listing" : isAdopted ? "Adopted" : "Adopt now"}
           </button>
         </div>
         
