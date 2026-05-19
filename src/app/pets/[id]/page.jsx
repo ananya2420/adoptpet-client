@@ -15,7 +15,10 @@ const PetDetailsPage = async ({ params }) => {
   const res = await fetch(`http://localhost:5000/pet/${id}`);
   const pet = await res.json();
 
-  const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, description } = pet;
+  const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, description, status } = pet;
+
+  // Check if this pet asset has already been marked as adopted in the database
+  const isAdopted = status === "adopted";
 
   return (
     <div className="w-full min-h-screen bg-white text-gray-800 py-8 px-4 md:px-12">
@@ -44,9 +47,16 @@ const PetDetailsPage = async ({ params }) => {
                 className="object-cover"
                 priority 
               />
-              <span className="absolute top-4 right-4 bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
-                Available
-              </span>
+              {/* Dynamic Badge Display Indicator */}
+              {isAdopted ? (
+                <span className="absolute top-4 right-4 bg-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
+                  Adopted
+                </span>
+              ) : (
+                <span className="absolute top-4 right-4 bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
+                  Available
+                </span>
+              )}
             </div>
 
         
@@ -99,8 +109,32 @@ const PetDetailsPage = async ({ params }) => {
 
         
           <aside className="lg:col-span-5 lg:sticky lg:top-8 bg-white">
-          
-            <AdoptionForm petName={petName} />
+            {isAdopted ? (
+              /* Success confirmation panel matching your video walkthrough screen styling */
+              <div className="border border-gray-200 rounded-3xl p-8 shadow-xs flex flex-col items-center justify-center text-center space-y-4 bg-white min-h-[300px]">
+                <div className="w-12 h-12 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-500">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+                    {petName} has been adopted!
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-2 max-w-sm leading-relaxed">
+                    This pet has successfully found their forever home. Browse other available pets below.
+                  </p>
+                </div>
+                <Link 
+                  href="/pets" 
+                  className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-sm transition-all duration-150 active:scale-98"
+                >
+                  Browse Available Pets
+                </Link>
+              </div>
+            ) : (
+              <AdoptionForm petName={petName} />
+            )}
           </aside>
 
         </div>

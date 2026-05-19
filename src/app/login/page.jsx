@@ -33,6 +33,9 @@ const LoginFormContent = () => {
     const formData = new FormData(e.currentTarget);
     const user = Object.fromEntries(formData.entries());
 
+    // Added tracking log to ensure form data is captured successfully
+    console.log("Captured Login Payload:", user);
+
     const { data, error } = await authClient.signIn.email({
       email: user.email,
       password: user.password,
@@ -73,7 +76,7 @@ const LoginFormContent = () => {
 
       <div className="text-center my-3">
         <h1 className="text-2xl font-bold">Login</h1>
-        <p>Start your adventure with Wanderlust</p>
+        <p>Start your adventure with Adoptpet</p>
       </div>
       <Card className="border rounded-none p-6">
         <Form onSubmit={onSubmit} className="flex w-96 flex-col gap-4">
@@ -89,7 +92,8 @@ const LoginFormContent = () => {
             }}
           >
             <Label>Email</Label>
-            <Input placeholder="john@example.com" />
+            {/* 🛠️ Added name="email" directly to the underlying Input element */}
+            <Input name="email" placeholder="john@example.com" />
             <FieldError />
           </TextField>
           <TextField
@@ -111,7 +115,8 @@ const LoginFormContent = () => {
             }}
           >
             <Label>Password</Label>
-            <Input placeholder="Enter your password" />
+            {/* 🛠️ Added name="password" directly to the underlying Input element */}
+            <Input name="password" placeholder="Enter your password" />
             <Description>
               Must be at least 8 characters with 1 uppercase and 1 number
             </Description>

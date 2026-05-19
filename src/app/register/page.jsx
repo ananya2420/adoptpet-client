@@ -29,26 +29,35 @@ const RegisterPage = () => {
     const formData = new FormData(e.currentTarget);
     const user = Object.fromEntries(formData.entries());
 
+    // Debug tracking log to verify form capture
+    console.log("Captured User Payload:", user);
+
     if (user.password !== user.confirmPassword) {
       setAlertText("Passwords do not match");
       setDisplayAlert(true);
       return;
     }
 
-    const { data, error } = await authClient.signUp.email({
-      email: user.email,
-      password: user.password,
-      name: user.name,
-      image: user.image,
-    });
+    try {
+      const { data, error } = await authClient.signUp.email({
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        image: user.image,
+      });
 
-    if (data) {
-      router.push("/");
-    }
+      if (data) {
+        router.push("/");
+      }
 
-    if (error) {
-      setAlertText(error.message);
+      if (error) {
+        setAlertText(error.message);
+        setDisplayAlert(true);
+      }
+    } catch (err) {
+      setAlertText("An unexpected runtime error occurred.");
       setDisplayAlert(true);
+      console.error(err);
     }
   };
 
@@ -74,19 +83,19 @@ const RegisterPage = () => {
 
       <div className="text-center my-3">
         <h1 className="text-2xl font-bold">Create Account</h1>
-        <p>Start your adventure with Wanderlust</p>
+        <p>Start your adventure with Adoptpet</p>
       </div>
-      <Card className="border rounded-none">
-        <Form onSubmit={onSubmit} className="flex w-96 flex-col gap-4">
+      <Card className="border rounded-none p-6 max-w-md mx-auto flex flex-col gap-4">
+        <Form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
           <TextField isRequired name="name" type="text">
             <Label>Name</Label>
-            <Input placeholder="Enter your name" />
+            <Input name="name" placeholder="Enter your name" />
             <FieldError />
           </TextField>
 
           <TextField name="image" type="url">
             <Label>Photo URL</Label>
-            <Input placeholder="Image url" />
+            <Input name="image" placeholder="Image url" />
             <FieldError />
           </TextField>
 
@@ -102,7 +111,7 @@ const RegisterPage = () => {
             }}
           >
             <Label>Email</Label>
-            <Input placeholder="john@example.com" />
+            <Input name="email" placeholder="aborty@example.com" />
             <FieldError />
           </TextField>
           
@@ -126,7 +135,7 @@ const RegisterPage = () => {
             }}
           >
             <Label>Password</Label>
-            <Input placeholder="Enter your password" />
+            <Input name="password" placeholder="Enter your password" />
             <Description>
               Must be at least 6 characters with 1 uppercase and 1 lowercase letter
             </Description>
@@ -145,7 +154,7 @@ const RegisterPage = () => {
             }}
           >
             <Label>Confirm Password</Label>
-            <Input placeholder="Re-enter your password" />
+            <Input name="confirmPassword" placeholder="Re-enter your password" />
             <FieldError />
           </TextField>
 
@@ -165,7 +174,7 @@ const RegisterPage = () => {
 
         <div className="flex justify-center items-center gap-3">
           <Separator />
-          <div className="whitespace-nowrap"> Or sign up with </div>
+          <div className="whitespace-nowrap text-xs text-gray-400"> Or sign up with </div>
           <Separator />
         </div>
         <div>
