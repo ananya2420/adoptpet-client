@@ -1,4 +1,8 @@
-import PetCard from "../components/PetCard";
+import AllPetsPage from "../components/AllPetsPage";
+
+
+
+
 
 
 const PetPage = async () => {
@@ -14,14 +18,10 @@ const PetPage = async () => {
     <div className="max-w-7xl mx-auto">
       <h1>All pets</h1>
 
-      <div className="grid grid-cols-4 gap-5">
-        {
-          pets?.map(pet => <PetCard key={pet._id} pet={pet}/>)
-        }
-
-        
+      <div>
+        <AllPetsPage petsData={pets} />
       </div>
-    </div> 
+    </div>
   );
 };
 

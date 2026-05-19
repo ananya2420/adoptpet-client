@@ -49,6 +49,16 @@ const nextConfig = {
         hostname: "people.com", 
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname:  "media.4-paws.org", 
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname:  "www.allaboutbirds.org", 
+        pathname: "/**",
+      }
     ],
   },
 };
