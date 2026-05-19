@@ -1,70 +1,112 @@
-import { Button } from "@heroui/react";
+import AdoptionForm from "@/app/components/AdoptionForm";
 import Image from "next/image";
 import Link from "next/link";
 import { FaLocationDot } from "react-icons/fa6";
-import { FiExternalLink, FiMapPin } from "react-icons/fi";
+import { FiArrowLeft, FiMapPin } from "react-icons/fi";
 import { GiHealthNormal } from "react-icons/gi";
 import { SiAnimalplanet } from "react-icons/si";
 import { TbVaccineBottle } from "react-icons/tb";
 
+
 const PetDetailsPage = async ({ params }) => {
   const { id } = await params;
 
-  const res=await fetch(`http://localhost:5000/pet/${id}`)
   
-  const pet=await res.json()
+  const res = await fetch(`http://localhost:5000/pet/${id}`);
+  const pet = await res.json();
 
- const {imageUrl, age, petName,vaccinationStatus,healthStatus,species,location,description} = pet
+  const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, description } = pet;
 
-  
-
- console.log(pet)
   return (
-    <div className="max-w-7xl mx-auto">
-    <Image alt={petName} src={imageUrl} height={500} width={800}  />
-    
-     <div className="p-2">
-            <div className="flex items-center gap-1">
-              
-             <FiMapPin /><span>{age}</span>
-            </div>
-            <div>
-                <h2 className="text-xl font-bold">{petName}</h2>
-            </div>
-            <div>
-              <TbVaccineBottle /> {vaccinationStatus}
-            </div>
-    
-            <div className="flex gap-2 items-center">
-                <GiHealthNormal /> {healthStatus}
-            </div>
-    
-            <div>
-             <SiAnimalplanet /> {species}
-            </div>
-    
-            <div>
-             <FaLocationDot /> {location}
-            </div>
-            
-             <p>{description}</p>
-             
-            {/* Added View Details and Adjust buttons immediately below */}
-            <div className="flex justify-between items-center gap-2 mt-4 pt-2 border-t">
-               {/* Corrected: changed _id to pet._id */}
-               <Link href={`/pets/${pet._id}`}><Button variant="ghost" className={'mt-1 text-green-600'}> <FiExternalLink/> View Details</Button></Link>
-              <button className="px-4 py-2 text-sm font-medium bg-green-600 text-white rounded hover:bg-green-500 transition">
-                Adjust immediately
-              </button>
-
-             
-            </div>
-            
-          </div>
+    <div className="w-full min-h-screen bg-white text-gray-800 py-8 px-4 md:px-12">
+      <div className="max-w-7xl mx-auto">
+        
   
+        <div className="mb-6">
+          <Link href="/pets" className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-green-600 transition">
+            ← Back to All Pets
+          </Link>
+        </div>
+
+   
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start bg-white">
+          
+       
+          <div className="lg:col-span-7 space-y-6 bg-white">
+            
+            {/* Top Aspect Cover Image wrapper frame */}
+            <div className="relative w-full aspect-[16/10] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
+              <Image 
+                alt={petName} 
+                src={imageUrl} 
+                fill
+                sizes="(max-w-7xl) 100vw, 60vw"
+                className="object-cover"
+                priority 
+              />
+              <span className="absolute top-4 right-4 bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-sm">
+                Available
+              </span>
+            </div>
+
+        
+            <div>
+              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">{petName}</h1>
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                <span className="px-3 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full capitalize">{species}</span>
+                <span className="px-3 py-1 text-xs font-bold bg-gray-100 text-gray-600 rounded-full">{age}</span>
+              </div>
+            </div>
+
+           
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col p-4 bg-gray-50 border border-gray-200/60 rounded-2xl">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <SiAnimalplanet className="text-blue-500 text-sm" /> Species
+                </span>
+                <span className="text-base font-bold text-gray-800 mt-1">{species}</span>
+              </div>
+
+              <div className="flex flex-col p-4 bg-gray-50 border border-gray-200/60 rounded-2xl">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <TbVaccineBottle className="text-green-600 text-base" /> Vaccination
+                </span>
+                <span className="text-base font-bold text-gray-800 mt-1">{vaccinationStatus}</span>
+              </div>
+
+              <div className="flex flex-col p-4 bg-gray-50 border border-gray-200/60 rounded-2xl">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <GiHealthNormal className="text-red-500 text-sm" /> Health Status
+                </span>
+                <span className="text-base font-bold text-gray-800 mt-1">{healthStatus}</span>
+              </div>
+
+              <div className="flex flex-col p-4 bg-gray-50 border border-gray-200/60 rounded-2xl">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <FaLocationDot className="text-amber-500 text-sm" /> Location
+                </span>
+                <span className="text-base font-bold text-gray-800 mt-1">{location}</span>
+              </div>
+            </div>
+
+           
+            <div className="pt-4 border-t border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Description</h3>
+              <p className="text-gray-600 text-base leading-relaxed whitespace-pre-line">{description}</p>
+            </div>
+
+          </div>
+
+        
+          <aside className="lg:col-span-5 lg:sticky lg:top-8 bg-white">
+          
+            <AdoptionForm petName={petName} />
+          </aside>
+
+        </div>
+      </div>
     </div>
   );
 };
 
 export default PetDetailsPage;
-

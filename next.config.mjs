@@ -38,7 +38,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "i.natgeofe.com",
         pathname: "/**",
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.britannica.com',
+        pathname: '/**',
+      },
     ]
   }
 };
