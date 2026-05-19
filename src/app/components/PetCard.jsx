@@ -16,8 +16,7 @@ const PetCard = ({ pet }) => {
   
   const router = useRouter();
 
-  // TODO: Replace this placeholder with your actual authentication state/context hook
-  // e.g., const { data: session } = authClient.useSession();
+
   const isAuthenticated = false; 
 
   const handleAdoptClick = () => {
