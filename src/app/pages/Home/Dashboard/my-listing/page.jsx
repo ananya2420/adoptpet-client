@@ -14,6 +14,10 @@ const MyListings = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
 
+  // State for Custom Delete Confirmation Modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [petToDelete, setPetToDelete] = useState(null);
+
   // 🌟 GLOBAL TRACKER: Tracks if ANY card on the entire dashboard has been approved or rejected
   const [isGlobalActionFinalized, setIsGlobalActionFinalized] = useState(false);
 
@@ -46,24 +50,34 @@ const MyListings = () => {
   const availableCount = listings.filter((p) => p.healthStatus !== "Adopted").length; 
   const adoptedCount = listings.filter((p) => p.healthStatus === "Adopted").length;
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to permanently delete this pet listing?")) return;
-
-    try {
-      const res = await fetch(`http://localhost:5000/pet/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setListings(listings.filter((item) => item._id !== id));
-        showToast("Pet listing deleted successfully.");
-      }
-    } catch (err) {
-      console.error("Failed to delete record:", err);
-    }
-  };
-
   // Trigger temporary floating system notifications 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(""), 4000);
+  };
+
+  // Triggers the custom confirmation modal instead of standard confirm browser popups
+  const openDeleteConfirmation = (pet) => {
+    setPetToDelete(pet);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteAction = async () => {
+    if (!petToDelete) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/pet/${petToDelete._id}`, { method: "DELETE" });
+      if (res.ok) {
+        // String conversion normalization ensures React captures state updates accurately
+        setListings(listings.filter((item) => String(item._id) !== String(petToDelete._id)));
+        showToast("Pet listing deleted successfully.");
+      }
+    } catch (err) {
+      console.error("Failed to delete record:", err);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setPetToDelete(null);
+    }
   };
 
   // Process operational modifications on sub-requests status
@@ -103,11 +117,11 @@ const MyListings = () => {
   return (
     <div className="min-h-screen bg-white text-gray-900 p-6 md:p-10 font-sans relative">
       
-      {/* Floating System Toast Alert Notification Banner */}
+      {/* 🛠️ FIXED TOAST COMPONENT: Replaced custom animation class with default Tailwind behaviors */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl transition-all duration-300 border border-gray-800 animate-appearance-in">
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl border border-gray-800 transition-all duration-300 transform translate-y-0 opacity-100 scale-100">
           <FiCheckCircle className="text-green-400 text-lg shrink-0" />
-          <div className="text-sm font-semibold">{toastMessage}</div>
+          <div className="text-sm font-semibold text-white">{toastMessage}</div>
         </div>
       )}
 
@@ -203,11 +217,12 @@ const MyListings = () => {
                     </button>
                   </Link>
 
+                  {/* 🛠️ LINK ROUTE SWITCHED HERE TO DISPLAY THE FULL DETAILS PAGE */}
                   <Link href={`/pages/Home/Dashboard/edit-panel/${pet._id}`} className="w-full">
-                    <button className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-gray-50 hover:bg-green-50 text-gray-700 font-semibold rounded-xl text-xs border border-gray-200 transition">
-                      <FiEdit2 className="text-sm text-green-600" /> Edit
-                    </button>
-                  </Link>
+  <button className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-gray-50 hover:bg-green-50 text-gray-700 font-semibold rounded-xl text-xs border border-gray-200 transition">
+    <FiEdit2 className="text-sm text-green-600" /> Edit
+  </button>
+</Link>
 
                   <button 
                     onClick={() => {
@@ -220,7 +235,7 @@ const MyListings = () => {
                   </button>
 
                   <button
-                    onClick={() => handleDelete(pet._id)}
+                    onClick={() => openDeleteConfirmation(pet)}
                     className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-xl text-xs border border-rose-100 transition"
                   >
                     <FiTrash2 className="text-sm" /> Delete
@@ -235,7 +250,7 @@ const MyListings = () => {
 
       {/* Dynamic Request Info Modal Popover Layout */}
       {isModalOpen && selectedPet && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-200 animate-fade-in">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-200">
           <div className="bg-[#121824] text-white w-full max-w-md rounded-2xl p-6 shadow-2xl relative border border-gray-800">
             
             {/* Header Area */}
@@ -307,6 +322,52 @@ const MyListings = () => {
                 🔒 A request action on the dashboard has already been finalized. This modal selection is locked.
               </div>
             )}
+
+          </div>
+        </div>
+      )}
+
+      {/* Custom Image-Accurate Delete Confirmation Modal Component */}
+      {isDeleteModalOpen && petToDelete && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-200">
+          <div className="bg-[#121824] text-white w-full max-w-sm rounded-2xl shadow-2xl relative border border-gray-800 overflow-hidden">
+            
+            {/* Modal Body Info Container */}
+            <div className="p-5 pb-4">
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex items-start gap-2.5">
+                  <span className="text-rose-500 text-lg mt-0.5">⚠️</span>
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-100 tracking-wide">Delete Pet Listing</h3>
+                    <p className="text-xs text-gray-400 mt-2 leading-relaxed font-normal">
+                      Are you sure you want to permanently delete <span className="font-bold text-gray-200">{" "}{petToDelete.petName}'s</span> listing? This cannot be undone.
+                    </p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => { setIsDeleteModalOpen(false); setPetToDelete(null); }}
+                  className="text-gray-500 hover:text-white transition mt-0.5"
+                >
+                  <FiX size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Actions Footer Divider Container */}
+            <div className="border-t border-gray-800/80 p-3 bg-[#161d2b]/30 flex justify-end items-center gap-2">
+              <button
+                onClick={() => { setIsDeleteModalOpen(false); setPetToDelete(null); }}
+                className="px-3.5 py-1.5 rounded-lg bg-gray-800/60 hover:bg-gray-800 text-gray-300 hover:text-white font-semibold text-xs border border-gray-700/60 transition"
+              >
+                Keep Listing
+              </button>
+              <button
+                onClick={confirmDeleteAction}
+                className="px-3.5 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900 border border-rose-900/40 hover:border-rose-800 text-rose-400 hover:text-rose-300 font-bold text-xs transition"
+              >
+                Delete Permanently
+              </button>
+            </div>
 
           </div>
         </div>
