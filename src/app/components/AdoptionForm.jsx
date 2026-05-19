@@ -1,37 +1,84 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation"; // 🛠️ Added for smooth SPA routing redirects
 import { FiHeart, FiCheckCircle } from "react-icons/fi";
 
 const AdoptionForm = ({ petName: initialPetName }) => {
+  const router = useRouter(); // 🛠️ Initialized router instance
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // 🛠️ Added loading track flag
+  const [submitError, setSubmitError] = useState("");
 
   const [typedPetName, setTypedPetName] = useState(initialPetName || "");
   const [typedUserName, setTypedUserName] = useState("");
   const [typedUserEmail, setTypedUserEmail] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
+    
+    // 🛠️ Generates formatted current system timestamp matching your mockup ("May 16, 2026")
+    const formattedRequestDate = new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+    // 🛠️ Formats user selected pickup target date string cleanly to standard format ("May 20, 2026")
+    const rawPickupDate = formData.get("pickupDate");
+    const formattedPickupDate = rawPickupDate 
+      ? new Date(rawPickupDate).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : "";
+
+    // Application Payload Config Struct
     const applicationPayload = {
       petName: typedPetName,
       userName: typedUserName,
       userEmail: typedUserEmail,
-      pickupDate: formData.get("pickupDate"),
+      requestDate: formattedRequestDate, // 🛠️ Added request date string injection
+      pickupDate: formattedPickupDate,   // 🛠️ Passed the cleaner form date layout
       message: formData.get("message"),
-      status: "pending",
+      status: "pending",                 // 👈 Explicit pending flag matching your screenshot requirements
     };
 
-    console.log("Processing Request Payload:", applicationPayload);
+    try {
+      setSubmitError("");
+      const response = await fetch("/api/petAdoption", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(applicationPayload),
+      });
 
-    setShowToast(true);
-    setIsSubmitted(true);
+      if (response.ok) {
+        console.log("Processing Request Payload Success:", applicationPayload);
+        setShowToast(true);
+        setIsSubmitted(true);
 
-    setTimeout(() => {
-      setShowToast(false);
-    }, 4000);
+        setTimeout(() => {
+          setShowToast(false);
+        }, 4000);
+      } else {
+        const errorBody = await response.text();
+        console.error("Server responded with an error status code.", response.status, errorBody);
+        setSubmitError("Unable to submit your request right now. Please try again in a moment.");
+      }
+    } catch (error) {
+      console.error("Network error submitting adoption form data pipeline:", error);
+      setSubmitError("A network error occurred while submitting your request. Please check your connection.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -41,7 +88,7 @@ const AdoptionForm = ({ petName: initialPetName }) => {
           <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-emerald-950 font-bold">
             ✓
           </div>
-          <div className="text-xs sm:text-sm font-medium">
+          <div className="text-black sm:text-sm font-medium">
             Adoption request submitted! The owner will review it soon. 🐾
           </div>
           <button 
@@ -50,6 +97,12 @@ const AdoptionForm = ({ petName: initialPetName }) => {
           >
             ✕
           </button>
+        </div>
+      )}
+
+      {submitError && (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {submitError}
         </div>
       )}
 
@@ -124,14 +177,15 @@ const AdoptionForm = ({ petName: initialPetName }) => {
 
             <button
               type="submit"
-              className="w-full mt-2 py-3.5 px-6 text-sm font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-sm transition-all duration-200 text-center"
+              disabled={isSubmitting}
+              className="w-full mt-2 py-3.5 px-6 text-sm font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-sm transition-all duration-200 text-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Adopt {typedPetName || "Buddy"} 🐾
+              {isSubmitting ? "Submitting Request..." : `Adopt ${typedPetName || "Buddy"} 🐾`}
             </button>
           </form>
         </aside>
       ) : (
-        <aside className="w-full bg-white border border-gray-200 rounded-3xl shadow-sm p-8 flex flex-col items-center justify-center text-center min-h-[450px] animate-in fade-in zoom-in-95 duration-300">
+        <aside className="w-full bg-white border border-gray-200 rounded-3xl shadow-sm p-8 flex flex-col items-center justify-center text-center animate-in fade-in zoom-in-95 duration-300">
           <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-50 text-green-500 mb-5 border border-green-100">
             <FiCheckCircle className="text-3xl stroke-[2.5]" />
           </div>
@@ -142,7 +196,7 @@ const AdoptionForm = ({ petName: initialPetName }) => {
           </p>
 
           <button 
-            onClick={() => window.location.href = "/home/dashboard"}
+            onClick={() => router.push("/dashboard/my-requests")} // 🛠️ Changed to router push execution configuration layout
             className="mt-8 px-6 py-3 text-xs font-bold uppercase tracking-wider bg-gray-900 hover:bg-gray-800 text-white rounded-xl shadow-md transition-all active:scale-98"
           >
             View My Requests

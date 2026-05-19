@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Card, Separator } from "@heroui/react";
 import {
   Button,
@@ -12,14 +12,19 @@ import {
   TextField,
 } from "@heroui/react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation"; // 🛠️ Imported useSearchParams
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 
-const LoginPage = () => {
+// 🛠️ Wrap form logic in a sub-component to safely utilize Next.js searchParams hooks
+const LoginFormContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [displayAlert, setDisplayAlert] = useState(false);
   const [alertText, setAlertText] = useState("");
+
+  // 🛠️ Grab target callbackUrl from URL string parameters or default back to root path "/"
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -33,9 +38,10 @@ const LoginPage = () => {
       password: user.password,
     });
 
-
     if (data) {
-      router.push("/");
+      // 🛠️ Updated routing destination to execute using dynamic callbackUrl value
+      router.push(callbackUrl);
+      router.refresh();
     }
 
     if (error) {
@@ -47,11 +53,12 @@ const LoginPage = () => {
   const handleGoogleSignin = async () => {
     await authClient.signIn.social({
       provider: "google",
+      callbackUrl: callbackUrl, // 🛠️ Pass it to BetterAuth social provider routing configuration parameters
     });
   };
 
   return (
-    <div className="max-w-7xl mx-auto relative">
+    <>
       {displayAlert && (
         <div className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-rose-950/95 border border-rose-800 text-rose-200 px-5 py-3.5 rounded-2xl shadow-xl animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-rose-500 text-rose-950 font-bold">
@@ -68,7 +75,7 @@ const LoginPage = () => {
         <h1 className="text-2xl font-bold">Login</h1>
         <p>Start your adventure with Wanderlust</p>
       </div>
-      <Card className="border rounded-none">
+      <Card className="border rounded-none p-6">
         <Form onSubmit={onSubmit} className="flex w-96 flex-col gap-4">
           <TextField
             isRequired
@@ -117,28 +124,39 @@ const LoginPage = () => {
           </div>
         </Form>
 
-        <p className="text-center text-sm text-gray-500 my-2">
+        <p className="text-center text-sm text-gray-500 my-4">
           Do not have an account yet?{" "}
-          <Link href="/register" className="text-green-600 font-bold hover:underline">
+          <Link href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`} className="text-green-600 font-bold hover:underline">
             Register
           </Link>
         </p>
 
-        <div className="flex justify-center items-center gap-3">
+        <div className="flex justify-center items-center gap-3 my-2">
           <Separator />
-          <div className="whitespace-nowrap"> Or sign up with </div>
+          <div className="whitespace-nowrap text-xs text-gray-400"> Or sign up with </div>
           <Separator />
         </div>
         <div>
           <Button
             onClick={handleGoogleSignin}
             variant="outline"
-            className={"w-full rounded-none"}
+            className={"w-full rounded-none mt-2"}
           >
             <FcGoogle /> Sign in with Google
           </Button>
         </div>
       </Card>
+    </>
+  );
+};
+
+// 🛠️ Main Component exporting structure wrapped with Suspense fallback boundaries
+const LoginPage = () => {
+  return (
+    <div className="max-w-7xl mx-auto flex flex-col items-center justify-center min-h-[80vh] relative">
+      <Suspense fallback={<div className="text-gray-500 text-sm">Loading Authentication form...</div>}>
+        <LoginFormContent />
+      </Suspense>
     </div>
   );
 };
