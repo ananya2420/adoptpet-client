@@ -1,3 +1,5 @@
+"use client"; // Required for using useRouter and event handlers in Next.js App Router
+
 import Image from "next/image"
 import { FiExternalLink, FiMapPin } from "react-icons/fi";
 import { TbVaccineBottle } from "react-icons/tb";
@@ -6,12 +8,29 @@ import { SiAnimalplanet } from "react-icons/si";
 import { FaLocationDot } from "react-icons/fa6";
 import { Button } from "@heroui/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation"; // Imported for redirection
 
 const PetCard = ({pet}) => {
   const {imageUrl, age, petName, vaccinationStatus, healthStatus, species, location} = pet
 
   const { _id } = pet;
   const testImage = "https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500";
+  
+  const router = useRouter();
+
+  // TODO: Replace this placeholder with your actual authentication state/context hook
+  // e.g., const { isAuthenticated } = useAuth(); or const { data: session } = useSession();
+  const isAuthenticated = false; 
+
+  const handleAdoptClick = () => {
+    if (!isAuthenticated) {
+      // Redirects to the login page if not authenticated
+      router.push("/login");
+    } else {
+      // Handle your actual adoption logic here if they are logged in
+      console.log("Proceeding with adoption for pet:", _id);
+    }
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col h-full group">
@@ -75,8 +94,11 @@ const PetCard = ({pet}) => {
             </Button>
           </Link>
           
-          <button className="flex-1 px-3 py-2.5 text-xs font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-sm transition-all duration-150 active:scale-98 text-center truncate">
-            Adjust immediately
+          <button 
+            onClick={handleAdoptClick}
+            className="flex-1 px-3 py-2.5 text-xs font-bold bg-green-600 hover:bg-green-500 text-white rounded-xl shadow-sm transition-all duration-150 active:scale-98 text-center truncate"
+          >
+            Adopt now
           </button>
         </div>
         

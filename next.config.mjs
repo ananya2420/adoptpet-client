@@ -31,21 +31,21 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "www.nationalgeographic.com",
-        pathname: "/**",
-      },
-       {
-        protocol: "https",
         hostname: "i.natgeofe.com",
         pathname: "/**",
       },
       {
-        protocol: 'https',
-        hostname: 'cdn.britannica.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "cdn.britannica.com",
+        pathname: "/**",
       },
-    ]
-  }
+      {
+        protocol: "https",
+        hostname: "people.com", // Added to fix your current runtime error
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
