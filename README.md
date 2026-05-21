@@ -3,7 +3,7 @@ Purpose: AdoptPet is a full-stack pet adoption platform where users can browse p
 
 The platform is designed to simplify the pet adoption process by connecting pet owners with potential adopters in a modern and user-friendly environment.
 
-Live URL:
+Live URL: https://adoptpet-client.vercel.app/
 
 Features: 
 ## 🔐 Authentication System
