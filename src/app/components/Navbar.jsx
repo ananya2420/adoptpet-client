@@ -13,16 +13,11 @@ const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
   const { data: session } = authClient.useSession();
 
-  {/*// Load saved theme OR system theme
+  // Load saved theme OR system theme
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-
-    if (savedTheme) {
-      setDarkMode(savedTheme === "dark");
-    } else {
-      setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
-    }
-  }, []);
+  }
+  )
 
   // Apply theme
   useEffect(() => {
@@ -33,7 +28,12 @@ const Navbar = () => {
       document.documentElement.classList.remove("dark");
       localStorage.setItem("theme", "light");
     }
-  }, [darkMode]); */}
+  }, [darkMode]);
+
+  // FIXED: Explicit handler function clears up any syntax highlighter/linter underlines
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
+  };
 
   const handleLogout = async () => {
     await authClient.signOut();
@@ -43,12 +43,13 @@ const Navbar = () => {
   return (
     <nav className="flex justify-between items-center p-5 bg-white dark:bg-gray-900 dark:text-white transition-colors duration-300">
 
-      {/* Left */}
-      <div>
-        <Image src="/assets/logo.png" height={120} width={120} alt="logo" />
-      </div>
+      {/* Left - Include: Logo + Website Name */}
+      <Link href="/" className="flex items-center gap-2">
+        <Image src="/assets/logo.png" height={40} width={40} alt="logo" />
+        <span className="font-bold text-xl tracking-tight">AdoptPet</span>
+      </Link>
 
-      {/* Center */}
+      {/* Center - Routes Control */}
       <ul className="flex gap-6 items-center">
         <li>
           <Link href="/" className="flex items-center gap-1">
@@ -60,73 +61,101 @@ const Navbar = () => {
             <CiSearch /> All Pets
           </Link>
         </li>
+        
+        {/* Dynamic Private Routes (Visible only when logged in) */}
+        {session && (
+          <>
+            <li>
+              <Link href="/pages/Home/Dashboard" className="flex items-center gap-1">
+                📋 My Requests
+              </Link>
+            </li>
+            <li>
+              <Link href="pages/Home/Dashboard" className="flex items-center gap-1">
+                ➕ Add Pet
+              </Link>
+            </li>
+          </>
+        )}
       </ul>
 
-      {/* Right */}
+      {/* Right Container */}
       <div className="flex items-center gap-4">
 
         {/* Theme Toggle */}
         <button
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={toggleDarkMode}
           className="px-3 py-1 border rounded hover:scale-105 transition"
         >
           {darkMode ? "☀️ Light" : "🌙 Dark"}
         </button>
 
-        <Link href="/profile">Profile</Link>
-        {!session && <Link href="/login">Login</Link>}
-        <Link href="/register">Register</Link>
+        {/* Auth Condition Container */}
+        {session ? (
+          /* Profile menu wrapper nested within the right flex container */
+          <div className="relative group flex flex-col items-center">
 
-      </div>
+            {/* Profile Trigger Button */}
+            <button className="flex items-center gap-2 px-3 py-2 rounded-full border hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              {/* Avatar */}
+              <Image
+                src={session.user?.image || "/assets/me.jpg"}
+                alt="profile"
+                width={32}
+                height={32}
+                className="rounded-full"
+              />
+              <span className="font-medium">
+                {session.user?.name ? session.user.name.split(" ")[0] : "User"}
+              </span>
+              <span className="text-sm">⌄</span>
+            </button>
 
-      {/* Profile Dropdown Container */}
-      <div className="relative group flex flex-col items-center">
+            {/* Dropdown Box - Hover interaction layer */}
+            <div className="absolute right-0 top-full w-64 bg-white dark:bg-gray-900 shadow-xl rounded-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 mt-2 block">
+              
+              {/* Invisible padding area that keeps the mouse hover active */}
+              <div className="absolute -top-3 left-0 right-0 h-3 bg-transparent" />
 
-        {/* Profile Button */}
-        <button className="flex items-center gap-2 px-3 py-2 rounded-full border hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-          
-          {/* Avatar */}
-          <Image
-            src="/assets/me.jpg"
-            alt="profile"
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
+              {/* User Info */}
+              <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+                <p className="font-semibold text-gray-900 dark:text-white truncate">
+                  {session.user?.name || "Mr Ananya Chakraborty Gourab"}
+                </p>
+                <p className="text-sm text-gray-500 truncate">
+                  {session.user?.email || "aborty174@gmail.com"}
+                </p>
+              </div>
 
-          <span className="font-medium">Mr</span>
+              {/* Menu Actions */}
+              <div className="flex flex-col">
+                <Link
+                  href="/pages/Home/Dashboard"
+                  className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 w-full text-left transition"
+                >
+                  📊 Dashboard
+                </Link>
 
-          <span className="text-sm">⌄</span>
-        </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition"
+                >
+                  🚪 Logout
+                </button>
+              </div>
 
-        {/* Dropdown Box */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full w-64 bg-white dark:bg-gray-900 shadow-lg rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 mt-1">
-          
-          {/* Invisible padding area that keeps the mouse hover active */}
-          <div className="absolute -top-3 left-0 right-0 h-3 bg-transparent" />
-
-          {/* User Info */}
-          <div className="p-4 border-b dark:border-gray-700">
-            <p className="font-semibold">Mr Ananya Chakraborty Gourab</p>
-            <p className="text-sm text-gray-500">aborty174@gmail.com</p>
+            </div>
           </div>
-
-          {/* Menu */}
-       <Link
-  href="/pages/Home/Dashboard"
-  className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 w-full"
->
-  📊 Dashboard
-</Link>
-
-          <button
-            onClick={handleLogout}
-            className="w-full text-left flex items-center gap-2 px-4 py-3 hover:bg-yellow-400 hover:text-black transition"
+        ) : (
+          /* Programmatic button-based navigation to eliminate the login click freeze issue */
+          <button 
+            onClick={() => router.push("/login")}
+            className="px-4 py-2 rounded-full bg-green-600 hover:bg-green-700 text-white font-medium transition cursor-pointer"
           >
-            🚪 Logout
+            Sign In
           </button>
+        )}
 
-        </div>
       </div>
     </nav>
   );

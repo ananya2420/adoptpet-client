@@ -58,6 +58,22 @@ const nextConfig = {
         protocol: "https",
         hostname:  "www.allaboutbirds.org", 
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname:  "plus.unsplash.com", 
+        pathname: "/**",
+      },
+      {
+         protocol: "https",
+        hostname:  "media.gettyimages.com", 
+        pathname: "/**",
+      },
+      
+       {
+         protocol: "https",
+        hostname:   "as1.ftcdn.net", 
+        pathname: "/**",
       }
     ],
   },

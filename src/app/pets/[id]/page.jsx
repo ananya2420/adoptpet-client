@@ -1,4 +1,6 @@
 import AdoptionForm from "@/app/components/AdoptionForm";
+import { DeleteAlert } from "@/app/components/DeleteAlert";
+import { EditModal } from "@/app/components/EditModal";
 import Image from "next/image";
 import Link from "next/link";
 import { FaLocationDot } from "react-icons/fa6";
@@ -17,11 +19,19 @@ const PetDetailsPage = async ({ params }) => {
 
   const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, description, status } = pet;
 
+  // Ensure Image `src` is never an empty string — fall back to a bundled asset.
+  const imageSrc = imageUrl || "/assets/dog1.png";
+  const imageAlt = petName ? `${petName} photo` : "Pet image";
+
   // Check if this pet asset has already been marked as adopted in the database
   const isAdopted = status === "adopted";
 
   return (
     <div className="w-full min-h-screen bg-white text-gray-800 py-8 px-4 md:px-12">
+   <div className="flex justify-end items-center gap-2 w-full">
+  <EditModal pet={pet}/>
+  <DeleteAlert pet={pet}/>
+</div>
       <div className="max-w-7xl mx-auto">
         
   
@@ -39,9 +49,9 @@ const PetDetailsPage = async ({ params }) => {
             
             {/* Top Aspect Cover Image wrapper frame */}
             <div className="relative w-full aspect-[16/10] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
-              <Image 
-                alt={petName} 
-                src={imageUrl} 
+                <Image 
+                  alt={imageAlt} 
+                  src={imageSrc} 
                 fill
                 sizes="(max-w-7xl) 100vw, 60vw"
                 className="object-cover"
