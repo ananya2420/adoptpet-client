@@ -79,7 +79,14 @@ const nextConfig = {
          protocol: "https",
         hostname:  "d2zp5xs5cp8zlg.cloudfront.net", 
         pathname: "/**",
+      },
+      {
+         protocol: "https",
+        hostname:  "harsh05.medium.com", 
+        pathname: "/**",
       }
+      //"harsh05.medium.com"
+
     ],
   },
 };

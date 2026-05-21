@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FiEye, FiEdit2, FiUsers, FiTrash2, FiPlus, FiX, FiCheckCircle } from "react-icons/fi";
 
 const MyListings = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   
   // Modal & Toast State Control Framework
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,7 +41,7 @@ const MyListings = () => {
       } catch (error) {
         console.error("Error retrieving pet listings data:", error);
       } finally {
-        setLoading(false);
+        loading && setLoading(false);
       }
     };
     fetchMyPets();
@@ -68,6 +70,8 @@ const MyListings = () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet/${petToDelete._id}`, { method: "DELETE" });
       if (res.ok) {
+        // Purge client-side caches to make sure all components across Next.js sync up
+        router.refresh();
         // String conversion normalization ensures React captures state updates accurately
         setListings(listings.filter((item) => String(item._id) !== String(petToDelete._id)));
         showToast("Pet listing deleted successfully.");
@@ -81,7 +85,10 @@ const MyListings = () => {
   };
 
   // Process operational modifications on sub-requests status
-  const handleUpdateRequestStatus = (petId, status) => {
+  const handleUpdateRequestStatus = async (petId, status) => {
+    // Sync the status changes layout upstream to Server Components
+    router.refresh();
+
     const updatedListings = listings.map((pet) => {
       if (pet._id === petId) {
         return { 
@@ -219,10 +226,10 @@ const MyListings = () => {
 
                   {/* 🛠️ LINK ROUTE SWITCHED HERE TO DISPLAY THE FULL DETAILS PAGE */}
                   <Link href={`/pages/Home/Dashboard/edit-panel/${pet._id}`} className="w-full">
-  <button className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-gray-50 hover:bg-green-50 text-gray-700 font-semibold rounded-xl text-xs border border-gray-200 transition">
-    <FiEdit2 className="text-sm text-green-600" /> Edit
-  </button>
-</Link>
+                    <button className="w-full flex items-center justify-center gap-1.5 py-2 px-3 bg-gray-50 hover:bg-green-50 text-gray-700 font-semibold rounded-xl text-xs border border-gray-200 transition">
+                      <FiEdit2 className="text-sm text-green-600" /> Edit
+                    </button>
+                  </Link>
 
                   <button 
                     onClick={() => {

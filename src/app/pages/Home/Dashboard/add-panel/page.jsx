@@ -16,7 +16,7 @@ const AddPetPanel = () => {
 
     pet.ownerEmail = ownerEmail;
 
-    const res = await fetch('${process.env.NEXT_PUBLIC_SERVER_URL}/pet', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet`, {
         method: 'POST',
         headers: {
             'Content-type': 'application/json'
@@ -28,6 +28,8 @@ const AddPetPanel = () => {
 
     if (res.ok) {
       alert("🎉 Your pet has been listed successfully!");
+      // Force Next.js to purge its client-side cache and fetch the latest database data
+      router.refresh();
       router.push("/pages/Home/Dashboard?tab=my-listings");
     }
   };
