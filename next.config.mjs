@@ -74,6 +74,11 @@ const nextConfig = {
          protocol: "https",
         hostname:   "as1.ftcdn.net", 
         pathname: "/**",
+      },
+      {
+         protocol: "https",
+        hostname:  "d2zp5xs5cp8zlg.cloudfront.net", 
+        pathname: "/**",
       }
     ],
   },
