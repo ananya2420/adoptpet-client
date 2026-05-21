@@ -62,21 +62,17 @@ const Navbar = () => {
           </Link>
         </li>
         
-        {/* Dynamic Private Routes (Visible only when logged in) */}
-        {session && (
-          <>
-            <li>
-              <Link href="/pages/Home/Dashboard" className="flex items-center gap-1">
-                📋 My Requests
-              </Link>
-            </li>
-            <li>
-              <Link href="pages/Home/Dashboard" className="flex items-center gap-1">
-                ➕ Add Pet
-              </Link>
-            </li>
-          </>
-        )}
+        {/* Made permanently visible alongside Home and All Pets */}
+        <li>
+          <Link href="/pages/Home/Dashboard" className="flex items-center gap-1">
+            📋 My Requests
+          </Link>
+        </li>
+        <li>
+          <Link href="pages/Home/Dashboard" className="flex items-center gap-1">
+            ➕ Add Pet
+          </Link>
+        </li>
       </ul>
 
       {/* Right Container */}

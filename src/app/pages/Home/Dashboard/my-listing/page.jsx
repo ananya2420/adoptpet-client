@@ -25,7 +25,7 @@ const MyListings = () => {
   useEffect(() => {
     const fetchMyPets = async () => {
       try {
-        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/pet");
+       const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet`);
         const data = await res.json();
         setListings(data);
         
