@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Project name: adoptme
+Purpose: AdoptPet is a full-stack pet adoption platform where users can browse pets, submit adoption requests, manage pet listings, and track adoption activities through a secure dashboard system.
 
-## Getting Started
+The platform is designed to simplify the pet adoption process by connecting pet owners with potential adopters in a modern and user-friendly environment.
 
-First, run the development server:
+Live URL:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Features: 
+## 🔐 Authentication System
+- User registration and login system
+- Google authentication support
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🐶 Pet Management
+- Add new pets with detailed information
+- Update and delete pet listings
+- Adoption status tracking
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📋 Adoption Request System
+- Users can request pet adoption
+- Pet owners can approve/reject requests
+- Only one request can be approved per pet
+- Prevents owners from adopting their own pets
 
-## Learn More
+## 🔍 Advanced Search & Filter
+- Search pets by name
+- Filter pets by species
+- Sorting and browsing functionality
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Modern UI/UX
+- Responsive design for all devices
+- Dark/Light theme toggle
+- Dynamic dashboard layout
+- Loading spinner and custom 404 page
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📊 Dashboard Features
+- My Listings page
+- My Requests page
+- Requests management modal
+- Pet statistics overview
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+# 🖼️ Pages & Functionalities
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Main Layout
+- Home Page
+- All Pets Page
+- Pet Details Page
+- Login/Register Page
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Dashboard Layout
+- Add Pet
+- My Listings
+- My Requests
+- Dashboard Overview
+
+---
+
+# 🛠️ Technologies Used
+
+## Frontend
+- Next.js
+- React.js
+- Tailwind CSS
+- Framer Motion
+- React Icons
+
+## Backend
+- Node.js
+- Express.js
+- MongoDB
+
+## Authentication & Security
+- JWT
+- HTTPOnly Cookies
+- Better Auth
+
+
+
+Package used:
+next
+react
+react-dom
+tailwindcss
+mongodb
+jsonwebtoken
+cookie-parser
+bcryptjs
+react-hot-toast
+react-icons
+framer-motion
+better-auth
+clsx
