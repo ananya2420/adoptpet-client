@@ -7,7 +7,7 @@ import AllPetsPage from "../components/AllPetsPage";
 
 const PetPage = async () => {
 
-  const res = await fetch('http://localhost:5000/pet');
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet`);
   
  
   const pets = await res.json();

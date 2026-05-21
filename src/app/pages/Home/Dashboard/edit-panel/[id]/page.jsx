@@ -32,7 +32,7 @@ const EditPetPanel = ({ params }) => {
   useEffect(() => {
     const fetchPetDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/pet/${petId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet/${petId}`);
         if (res.ok) {
           const data = await res.json();
           
@@ -84,7 +84,7 @@ const EditPetPanel = ({ params }) => {
     e.preventDefault();
 
     try {
-      await fetch(`http://localhost:5000/pet/${petId}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet/${petId}`, {
           method: 'PUT',
           headers: {
               'Content-type': 'application/json'

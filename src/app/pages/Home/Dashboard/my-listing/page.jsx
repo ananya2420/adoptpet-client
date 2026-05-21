@@ -25,7 +25,7 @@ const MyListings = () => {
   useEffect(() => {
     const fetchMyPets = async () => {
       try {
-        const res = await fetch("http://localhost:5000/pet");
+        const res = await fetch("${process.env.NEXT_PUBLIC_SERVER_URL}/pet");
         const data = await res.json();
         setListings(data);
         
@@ -66,7 +66,7 @@ const MyListings = () => {
     if (!petToDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/pet/${petToDelete._id}`, { method: "DELETE" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet/${petToDelete._id}`, { method: "DELETE" });
       if (res.ok) {
         // String conversion normalization ensures React captures state updates accurately
         setListings(listings.filter((item) => String(item._id) !== String(petToDelete._id)));

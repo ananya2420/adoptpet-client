@@ -8,7 +8,7 @@ const FeaturedPets = async () => {
   
   try {
     // Fetch data directly from your backend server
-    const res = await fetch("http://localhost:5000/pet", { 
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet`, {
       next: { revalidate: 60 } // Automatically checks for new pets every 60 seconds
     });
     

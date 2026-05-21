@@ -14,7 +14,7 @@ const PetDetailsPage = async ({ params }) => {
   const { id } = await params;
 
   
-  const res = await fetch(`http://localhost:5000/pet/${id}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/pet/${id}`);
   const pet = await res.json();
 
   const { imageUrl, age, petName, vaccinationStatus, healthStatus, species, location, description, status } = pet;

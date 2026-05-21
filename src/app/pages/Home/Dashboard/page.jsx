@@ -11,7 +11,7 @@ import MyListing from "./my-listing/page";
 import MyRequestsPanel from "./myrequest/page";
 
 const DashboardPage = () => {
-  const searchParams = useSearchParams();
+  //const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState("my-request");
 
  {/* useEffect(() => {
