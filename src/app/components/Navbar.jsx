@@ -108,17 +108,17 @@ const Navbar = () => {
             </button>
 
             {/* Dropdown Box - Hover interaction layer */}
-            <div className="absolute right-0 top-full w-64 bg-white dark:bg-gray-900 shadow-xl rounded-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 mt-2 block">
+            <div className="absolute right-0 top-full w-64 bg-white  shadow-xl rounded-xl border border-gray-100 dark:border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 mt-2 block">
               
               {/* Invisible padding area that keeps the mouse hover active */}
               <div className="absolute -top-3 left-0 right-0 h-3 bg-transparent" />
 
               {/* User Info */}
-              <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-                <p className="font-semibold text-gray-900 dark:text-white truncate">
+              <div className="p-4 border-b border-white-100 border-white-800">
+                <p className="font-semibold text-green-900 :text-green truncate">
                   {session.user?.name || "Mr Ananya Chakraborty Gourab"}
                 </p>
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-sm text-green-500 truncate">
                   {session.user?.email || "aborty174@gmail.com"}
                 </p>
               </div>
@@ -127,14 +127,14 @@ const Navbar = () => {
               <div className="flex flex-col">
                 <Link
                   href="/pages/Home/Dashboard"
-                  className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 w-full text-left transition"
+                  className="flex items-center gap-2 px-4 py-3 text-green-700 text-green-200 hover:bg-green-100 hover:bg-green-800 w-full text-left transition"
                 >
                   📊 Dashboard
                 </Link>
 
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition"
+                  className="w-full text-left flex items-center gap-2 px-4 py-3 text-red-700 text-red-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition"
                 >
                   🚪 Logout
                 </button>

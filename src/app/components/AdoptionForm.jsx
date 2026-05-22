@@ -196,7 +196,7 @@ const AdoptionForm = ({ petName: initialPetName }) => {
           </p>
 
           <button 
-            onClick={() => router.push("/dashboard/my-requests")} // 🛠️ Changed to router push execution configuration layout
+            onClick={() => router.push("/pages/Home/Dashboard")} // 🛠️ Changed to router push execution configuration layout
             className="mt-8 px-6 py-3 text-xs font-bold uppercase tracking-wider bg-gray-900 hover:bg-gray-800 text-white rounded-xl shadow-md transition-all active:scale-98"
           >
             View My Requests

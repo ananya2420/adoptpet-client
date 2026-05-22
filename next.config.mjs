@@ -84,8 +84,13 @@ const nextConfig = {
          protocol: "https",
         hostname:  "harsh05.medium.com", 
         pathname: "/**",
+      },
+      {
+         protocol: "https",
+        hostname:  "i0.wp.com", 
+        pathname: "/**",
       }
-      //"harsh05.medium.com"
+     // "i0.wp.com"
 
     ],
   },
