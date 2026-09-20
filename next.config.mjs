@@ -4,6 +4,12 @@ const nextConfig = {
   reactCompiler: true,
   images: {
     remotePatterns: [
+         {
+        protocol: "https",
+        hostname: "www.roluqaq.org", // 🌟 Added to fix your roluqaq error
+        pathname: "/**",
+      },
+      
       {
         protocol: "https",
         hostname: "upload.wikimedia.org", // 🌟 Added to fix your Wikimedia cat image error
